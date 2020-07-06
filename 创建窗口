@@ -1,0 +1,81 @@
+#include <glad/glad.h>       //GLAD库头文件
+#include <GLFW/glfw3.h>      //GLFW库头文件
+
+#include <iostream>
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow *window);
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+int main()
+{
+    // glfw: initialize and configure
+    // ------------------------------
+    glfwInit();    //glfwInit函数来初始化GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);    //glfwWindowHint函数来配置GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);    //告诉GLFW我们要使用的OpenGL版本是3.3
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+    // glfw window creation
+    // --------------------
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);    //创建一个窗口对象，这里函数返回一个GLFWwindow对象
+    if (window == NULL)
+    {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);    //GLFW将当前窗口的上下文设置为当前线程的主上下文
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // glad: load all OpenGL function pointers (GLAD是用来管理OpenGL的函数指针)
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))    //在调用任何OpenGL的函数之前,需要初始化GLAD
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }    
+
+    // render loop (不希望只绘制一个图像之后应用程序就立即退出并关闭窗口)
+    // -----------
+    while (!glfwWindowShouldClose(window))    //glfwWindowShouldClose函数在每次循环的开始前检查一次GLFW是否被要求退出
+    {
+        // input
+        // -----
+        processInput(window);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);    //glfwPollEvents函数检查有没有触发什么事件
+        glfwPollEvents();    //glfwSwapBuffers函数会交换颜色缓冲,并且将会作为输出显示在屏幕上
+    }
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwTerminate();    //在main函数的最后调用glfwTerminate函数来释放/删除之前的分配的所有资源
+    return 0;
+}
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *window)
+{
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)    //glfwGetKey函数用于对一个窗口对象进行按键输入
+        glfwSetWindowShouldClose(window, true);    //glfwSetwindowShouldClose函数把WindowShouldClose属性设置为 true的方法关闭GLFW
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
+}
